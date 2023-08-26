@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "arxiv-resource"
+version = "0.1.0"
+description = ""
+authors = ["toma tanaka <ulti4929@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ipykernel = "^6.25.1"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

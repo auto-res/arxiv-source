@@ -4,7 +4,7 @@ import tarfile
 import shutil
 
 
-def get_text(directory_, url_):
+def obtain_resource(directory_, url_):
     arxiv_number = url_.replace('https://arxiv.org/abs/', '')
 
     os.makedirs(directory_ + '/tmp', exist_ok=True)
