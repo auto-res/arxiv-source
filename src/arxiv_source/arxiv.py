@@ -19,7 +19,8 @@ def obtain_resource(directory_, url_):
     os.rename(directory_ + '/tmp', arxiv_dir)
 
     # ディレクトリに移動
-    os.chdir(arxiv_dir)
+    os.makedirs(arxiv_dir + '/source', exist_ok=True)
+    os.chdir(arxiv_dir + '/source')
 
     # ファイルをダウンロード
     soruce_url = f'https://arxiv.org/e-print/{arxiv_number}'
@@ -34,10 +35,11 @@ def obtain_resource(directory_, url_):
 
     os.remove(f'{arxiv_number}.tar.gz')
 
-
     # 論文の情報を保存するディレクトリを作成
-    os.makedirs(arxiv_dir + '/data', exist_ok=True)
+    os.makedirs(arxiv_dir, exist_ok=True)
 
+    # titleのデータを取得
+    title_extract(arxiv_dir)
 
     # related workのデータを取得
     related_work_extract(arxiv_dir)
@@ -50,6 +52,9 @@ def obtain_resource(directory_, url_):
 
 
 def search_files(directory, keywords):
+    """
+    ファイル名に指定の文字を含むか判定
+    """
     # 指定されたディレクトリ内のすべてのファイルをリストアップ
     for root, dirs, files in os.walk(directory):
         for file in files:
@@ -72,6 +77,7 @@ def list_tex_files(directory):
     return tex_files
 
 
+
 def extract_text_between(file_path, start_string, end_string):
     with open(file_path, 'r', encoding='utf-8') as f:
         data = f.read()
@@ -86,6 +92,23 @@ def extract_text_between(file_path, start_string, end_string):
 
 
 
+
+
+def title_extract(arxiv_dir_):
+    tex_files = list_tex_files(arxiv_dir_)
+    for i in tex_files:
+            text = extract_text_between(i, '\\title{', '}')
+            if text != None:
+                text = text.replace('\\','')
+                text = text.replace('\n','')
+                with open(arxiv_dir_ + '/title.txt', 'w', encoding='utf-8') as file:
+                    file.write(text)
+    return
+
+
+
+
+
 def related_work_extract(arxiv_dir_):
     keywords = ["related", "Related"]
     result = search_files(arxiv_dir_, keywords)
@@ -95,14 +118,14 @@ def related_work_extract(arxiv_dir_):
             text = file.read()
 
         # テキストを別のファイルに書き込む
-        with open(arxiv_dir_ + '/data/related_work.txt', 'w', encoding='utf-8') as file:
+        with open(arxiv_dir_ + '/related_work.txt', 'w', encoding='utf-8') as file:
             file.write(text)
     else:
         tex_files = list_tex_files(arxiv_dir_)
         for i in tex_files:
             text = extract_text_between(i, '\\section{Related Work}', '\\section')
             if text != None:
-                with open(arxiv_dir_ + '/data/related_work.txt', 'w', encoding='utf-8') as file:
+                with open(arxiv_dir_ + '/related_work.txt', 'w', encoding='utf-8') as file:
                     file.write(text)
     return
 
@@ -118,13 +141,13 @@ def abstract_extract(arxiv_dir_):
             text = file.read()
 
         # テキストを別のファイルに書き込む
-        with open(arxiv_dir_ + '/data/abstract.txt', 'w', encoding='utf-8') as file:
+        with open(arxiv_dir_ + '/abstract.txt', 'w', encoding='utf-8') as file:
             file.write(text)
     else:
         tex_files = list_tex_files(arxiv_dir_)
         for i in tex_files:
             text = extract_text_between(i, '\\begin{abstract}', '\\end{abstract}')
             if text != None:
-                with open(arxiv_dir_ + '/data/abstract.txt', 'w', encoding='utf-8') as file:
+                with open(arxiv_dir_ + '/abstract.txt', 'w', encoding='utf-8') as file:
                     file.write(text)
     return
