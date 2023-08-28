@@ -8,10 +8,12 @@ pip install arxiv-source
 ```
 * execution
 ```python
+import arxiv_source
+
 url = 'arxiv link'
 directory = 'Directory to be saved'
 
-arxiv.obtain_resource(directory, url)
+arxiv_source.obtain_resource(directory, url)
 ```
 
 * Execution example
